@@ -23,9 +23,6 @@ var/
 .installed.cfg
 *.egg
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
 
 # Unit test / coverage reports
 .tox/
@@ -42,7 +39,6 @@ coverage.xml
 *.pot
 
 # Django stuff:
-*.log
 local_settings.py
 db.sqlite3
 
