@@ -38,48 +38,58 @@ Here’s what happens step by step:
         brew install git
 
     🔹 Python 3.11+ – Check by running:
-        python --version
-    If not installed, download from python.org
+   
+       python --version
 
-2. Clone the Repository
+   If not installed, download from python.org
+
+3. Clone the Repository
     Navigate to your desired directory and run:
+
        git clone https://github.com/Up-Bizz/ContactVerifier.git
        cd ContactVerifier
 
-3. Set Up a Virtual Environment
-    Windows (CMD/PowerShell):
-       python -m venv venv
-       venv\Scripts\activate
+5. Set Up a Virtual Environment:
 
-   macOS/Linux:
-       python3 -m venv venv
-       source venv/bin/activate
+       Windows (CMD/PowerShell):
+           python -m venv venv
+           venv\Scripts\activate
 
-4. Install Dependencies
-    pip install -r requirements.txt or pip3 install -r requirements.txt
+       macOS/Linux:
+           python3 -m venv venv
+           source venv/bin/activate
 
-5. Install Playwright and Browsers
-    playwright install
+7. Install Dependencies:
 
-6. Install Tesseract-OCR
-    Windows:
-       1. Download from Tesseract-OCR.
-       2. Add the installation path to your system PATH.
+       pip install -r requirements.txt or pip3 install -r requirements.txt
 
-   Linux (Ubuntu/Debian):
-       sudo apt update && sudo apt install -y tesseract-ocr
+9. Install Playwright and Browsers:
 
-   macOS (Homebrew):
-       brew install tesseract
+       playwright install
+
+11. Install Tesseract-OCR:
+
+        Windows:
+           1. Download from Tesseract-OCR.
+           2. Add the installation path to your system PATH.
+
+        Linux (Ubuntu/Debian):
+           sudo apt update && sudo apt install -y tesseract-ocr
+        
+        macOS (Homebrew):
+           brew install tesseract
 
    Verify Installation:
+       
        tesseract --version
 
-7. Run the Script
-    python check_contact.py or python3 check_contact.py
+11. Run the Script:
+
+        python check_contact.py or python3 check_contact.py
 
 
 📌 Summary
+
 ✅ Clone Repository
 ✅ Set Up Virtual Environment
 ✅ Install Dependencies
