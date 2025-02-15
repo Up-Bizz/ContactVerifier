@@ -22,68 +22,69 @@ Here’s what happens step by step:
     5️⃣. Results Reporting: Finally, all the checks are documented in a new Excel file. This way, you can quickly see if all the details match and ensure that the contact information is accurate.
 
 
-## Organize the Project Structure
-CheckContactProject/
-│── Resources/
-│   │── data/
-│   │   ├── details.xlsx  (Input file)
-│   │── Logs/  (Generated logs)
-│── Scripts/
-│── .gitignore
-│── README.md
-│── requirements.txt
-│── check_contact.py  (Main class)
+📂 Installation Guide
 
+1. Prerequisites
 
-📌 Project Setup Guide
-1. Install Required Software
+    Ensure the following are installed:
 
-Before proceeding, ensure you have the following installed:
-    - Python 3.11+ (Check with python --version)
-    - pip (Python package manager, should be installed with Python)
-    - virtualenv (for creating an isolated environment)
-    - Google Chrome (for Playwright to work properly)
-    - Tesseract OCR (for image text extraction)
+    🔹 Git – Check by running:
+        git --version
+
+    If not installed:
+
+        Windows: Download from git-scm.com
+        macOS: Install via Homebrew:
+        brew install git
+
+    🔹 Python 3.11+ – Check by running:
+        python --version
+    If not installed, download from python.org
 
 2. Clone the Repository
-    - If the client receives the code as a ZIP file, they should extract it. If using Git:
-git clone <REPOSITORY_URL>
-cd <PROJECT_FOLDER>
+    Navigate to your desired directory and run:
+       git clone https://github.com/Up-Bizz/ContactVerifier.git
+       cd ContactVerifier
 
+3. Set Up a Virtual Environment
+    Windows (CMD/PowerShell):
+       python -m venv venv
+       venv\Scripts\activate
 
-3. Create and Activate a Virtual Environment
-
-Windows (CMD or PowerShell)
-python -m venv venv
-venv\Scripts\activate
-
-Mac/Linux (Terminal)
-python3 -m venv venv
-source venv/bin/activate
-
+   macOS/Linux:
+       python3 -m venv venv
+       source venv/bin/activate
 
 4. Install Dependencies
-Run the following command to install all required packages:
-pip install -r requirements.txt
+    pip install -r requirements.txt or pip3 install -r requirements.txt
 
-or 
+5. Install Playwright and Browsers
+    playwright install
 
-pip install openpyxl logging pytesseract pandas pillow playwright
+6. Install Tesseract-OCR
+    Windows:
+       1. Download from Tesseract-OCR.
+       2. Add the installation path to your system PATH.
+
+   Linux (Ubuntu/Debian):
+       sudo apt update && sudo apt install -y tesseract-ocr
+
+   macOS (Homebrew):
+       brew install tesseract
+
+   Verify Installation:
+       tesseract --version
+
+7. Run the Script
+    python check_contact.py or python3 check_contact.py
 
 
-5. Install Playwright Browsers
-After installing dependencies, install Playwright browsers:
-playwright install
+📌 Summary
+✅ Clone Repository
+✅ Set Up Virtual Environment
+✅ Install Dependencies
+✅ Install Playwright & Browsers
+✅ Install Tesseract-OCR
+✅ Run the Script
 
 
-6. Install Tesseract OCR
-Tesseract is required for image-based text extraction.
-Windows
-    Download from: https://github.com/UB-Mannheim/tesseract/wiki
-    Install it and note the installation path (e.g., C:\Program Files\Tesseract-OCR).
-    Add this path to the system environment variables (PATH).
-    Verify installation by running:
-tesseract --version
-
-Mac (Homebrew)
-brew install tesseract
