@@ -2,6 +2,7 @@ import re
 import os
 import time
 import openpyxl
+import argparse
 import logging
 import pytesseract
 import pandas as pd
@@ -28,8 +29,11 @@ class CheckContact:
         # Setting up the logging configuration
         self.setup_logging()
 
-        self.file_path = file_path
-        self.data = self.read_excel()
+        # self.file_path = file_path
+        self.file_path =  f"Resources/data/{file_path}"
+        self.file_name = self.file_path.split("/")[-1]
+        self.round_count = 0
+        self.data = self.read_excel(csv=True)
 
 
     def setup_logging(self) -> None:
@@ -64,39 +68,52 @@ class CheckContact:
         """Log an error message."""
         self.logger.error(message)
 
-    def read_excel(self) -> list[dict]:
+    def read_excel(self, csv=False) -> list[dict]:
         """
-        Reads an Excel file and returns a list of dictionaries, while skipping rows already processed.
+        Reads an Excel or CSV file using Pandas and returns a list of dictionaries.
+        It resumes progress if an output file exists.
+
+        :param csv: If True, reads a CSV file instead of an Excel file (default: False).
+        :return: List of dictionaries representing the data.
         """
-        self.log_info(f"Reading data from Excel file: {self.file_path}")
+        self.log_info(f"Reading data from {'CSV' if csv else 'Excel'} file: {self.file_path}")
 
-        # Check if output file exists to resume from last progress
-        output_file = "Resources/data/output.xlsx"
-        if os.path.exists(output_file):
-            self.log_info("🔄 Resuming from previous progress...")
-            workbook = openpyxl.load_workbook(output_file, data_only=True)
-        else:
-            workbook = openpyxl.load_workbook(self.file_path, data_only=True)
+        # Define the output file path for progress tracking
+        output_extension = "csv" if csv else "xlsx"
+        output_file = f"Resources/data/output/output_{self.file_name.replace('.xlsx', f'.{output_extension}')}"
 
-        sheet = workbook.active
-        headers = [cell.value for cell in sheet[1] if cell.value]
-        data = []
+        # Determine which file to read (resume if output exists)
+        data_file = output_file if os.path.exists(output_file) else self.file_path
 
-        for row in sheet.iter_rows(min_row=2, values_only=True):
-            row_dict = {}
-            for col_index, cell_value in enumerate(row):
-                column_name = headers[col_index]
-                row_dict[column_name] = str(cell_value).strip() if cell_value else None
+        # Ensure the file exists
+        if not os.path.exists(data_file):
+            self.log_error(f"🚨 Error: File '{data_file}' not found.")
+            raise FileNotFoundError(f"File '{data_file}' not found.")
 
-            # Skip rows where 'presence_of_fullname' is already filled
-            if row_dict.get("presence_of_fullname"):
-                continue
+        try:
+            # Read file based on the `csv` flag
+            if csv:
+                df = pd.read_csv(data_file, dtype=str)  # Read CSV file
+            else:
+                df = pd.read_excel(data_file, dtype=str)  # Read Excel file
 
-            data.append(row_dict)
+        except Exception as e:
+            self.log_error(f"⚠️ Failed to open file: {e}")
+            raise ValueError(f"Error opening file: {e}")
 
+        # Fill NaN values with None for consistency
+        df = df.where(pd.notna(df), None)
+
+        # Convert DataFrame to a list of dictionaries
+        data = df.to_dict(orient="records")
+
+        # Skip rows where 'presence_of_fullname' is already filled (Only for first 2 rounds)
+        if self.round_count <= 2:
+            data = [row for row in data if not row.get("presence_of_fullname")]
+
+        self.round_count += 1
         return data
 
-    
 
     def format_phone_number(self, phone: str) -> str:
         """
@@ -122,12 +139,16 @@ class CheckContact:
         :return: True if the name is found, False otherwise.
         """
         
+        if not first_name and not last_name:
+            return False 
+        
         def find_name():
             page_text = page.content().lower()
             first_name_lower = first_name.lower()
             last_name_lower = last_name.lower()
 
             full_name = f"{first_name_lower} {last_name_lower}"
+
             if full_name in page_text:
                 return True
 
@@ -215,6 +236,9 @@ class CheckContact:
 
         :return: True if job title is found, False otherwise.
         """
+        if not job_title: # If job_title is null
+            return False 
+        
         page.wait_for_timeout(1000)
         page_text = page.content().lower()
 
@@ -265,97 +289,15 @@ class CheckContact:
         return job_title_found
 
 
-    def save_results_to_excel(self, output_file: str = "Resources/data/output.xlsx") -> None:
+    def save_results_to_excel(self) -> None:
         """
         Saves results to an Excel file, including original phone numbers.
         """
+        output_file = f"Resources/data/output/output_{self.file_name}"
+
         df = pd.DataFrame(self.data)
         df.to_excel(output_file, index=False)
         self.log_info(f"Saving results to {output_file}...")
 
 
-    def run(self) -> None:
-        """
-        Main method to check contact details for each record in the dataset.
-        """
-        self.log_info("Starting the contact details check...")
-        with sync_playwright() as p:
-            browser = p.chromium.launch()
-            page = browser.new_page()
-            count = 0
-            save_interval = 30  # Save results every 30 records
-
-            try:
-            #    for entry in self.data:
-               for count, entry in enumerate(self.data, start=1):
-                    # Set default values
-                    entry['presence_of_fullname'] = "No"
-                    entry['presence_of_phone'] = "No"
-                    entry['presence_of_job_title'] = "No"
-
-                    print(f"✅ Row {count} is completed!")
-
-                    first_name, last_name = entry['first_name'], entry['last_name']
-                    original_phone, job_title, url = entry['phone'], entry['job_title'], entry['decision_maker_source']
-                    
-                    print(f"Firstname: {first_name}")
-                    formatted_phone = self.format_phone_number(original_phone)
-
-                    success = False
-                    for attempt in range(2):  # Retry loading twice
-                        try:
-                            self.log_info(f"🔄 Attempt {attempt + 1}: Loading {url} ...")
-                            page.goto(url, wait_until="load", timeout=60000)  # 60s timeout
-                            success = True
-                            break
-                        except Exception as e:
-                            self.log_error(f"⚠️ Error loading {url}: {e}")
-
-                    if not success:
-                        self.log_error(f"❌ Skipping {url} due to repeated load failures.")
-                        continue
-                    
-                    entry['presence_of_fullname'] = "Yes" if self.check_name_on_page(page, url, first_name, last_name) else "No"
-
-                    if entry['presence_of_fullname'] == "Yes":
-                        extracted_phones = self.extract_phone_numbers(page)
-                        entry['presence_of_phone'] = "Yes" if formatted_phone and formatted_phone in ', '.join(extracted_phones) else "No"
-                        self.log_info(f"📲 Phone number '{original_phone}' is found: {entry['presence_of_phone']}")
-                        entry['presence_of_job_title'] = "Yes" if self.check_job_title_on_page(page, url, job_title) else "No"
-
-                        if entry['presence_of_job_title'] == "No":
-                            entry['presence_of_job_title'] = "Yes" if self.translate_page(page, url, job_title) else "No"
-                    else:
-                        entry['presence_of_phone'] = "No"
-                        entry['presence_of_job_title'] = "No"
-
-                    # Save progress every `save_interval` rows
-                    if count % save_interval == 0:
-                        self.save_results_to_excel()
-                        self.log_info(f"📝 Auto-saved progress at row {count}.")
-
-            except Exception as e:
-                self.log_error(f"🚨 Unexpected error: {e}")
-                self.save_results_to_excel()
-                self.log_info("⚠️ Auto-saved results before exiting due to an error.")
-
-            finally:
-                self.save_results_to_excel()
-                self.log_info("✅ Final results saved before closing.")
-                browser.close()
-
-            self.log_info("Completed the contact details check.")
-
-
-
-if __name__ == "__main__":
-    checker = CheckContact("Resources/data/details.xlsx")
-    checker.run()
-
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    print(f"Elapsed time: {elapsed_time:.2f} seconds")
-
-
-# It takes 2 hours and 36 minutes to get all the information.
-# For 1 minute scraper can get information for around 17rows.
+    
