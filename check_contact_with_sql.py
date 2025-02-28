@@ -69,7 +69,6 @@ class DB:
 
         conn.commit()
         conn.close()
-    
 
     @staticmethod
     def read_excel_and_store(file_path='details.xlsx'):
@@ -118,7 +117,6 @@ class DB:
         conn.close()
 
         print(f"✅ Data from {file_path} has been successfully inserted into the database.")
-
     
     @staticmethod
     def get_first_not_processed(status="'not_processed'") -> dict:
@@ -152,7 +150,7 @@ class DB:
             }
         else:
             return None  # No unprocessed rows found
-        
+
 
     @staticmethod
     def update_status_by_id(row_id, row='status', status="processing", log_info=True):
@@ -213,10 +211,7 @@ class CheckContact(CheckContact):
     def __init__(self, file_path, db_name=None):
         self.setup_logging()
         self.round_count = 0
-        DB.db_name = db_name
-        
-        if not db_name:
-            DB.db_name = file_path.replace('xlsx', 'db')
+        DB.db_name = db_name if db_name else file_path.replace('.xlsx', '.db')
         DB.initialize_db_if_needed(file_path)
 
     def run(self) -> None:
@@ -230,7 +225,6 @@ class CheckContact(CheckContact):
 
             processing_row = DB.get_first_not_processed()
             
-
             while processing_row:
                 try:
                     url, first_name, last_name, phone_number, job_title = processing_row['decision_maker_source'], processing_row['first_name'], processing_row['last_name'], processing_row['phone'], processing_row['job_title']
@@ -266,7 +260,6 @@ class CheckContact(CheckContact):
                         else:
                             presence_of_phone = False 
                             presence_of_job_title = False
-
                         
                         print(f'Found name: {presence_of_fullname}, job_title: {presence_of_job_title}, phone: {presence_of_phone}')
 
@@ -274,12 +267,9 @@ class CheckContact(CheckContact):
                         DB.update_status_by_id(processing_row['id'], row='presence_of_job_title', status=presence_of_job_title, log_info=False)
                         DB.update_status_by_id(processing_row['id'], row='presence_of_phone', status=presence_of_phone, log_info=False)
                         DB.update_status_by_id(processing_row['id'], status=statuses['processed'])
-
                     
                     print(f"{first_name} info saved!")
                     processing_row = DB.get_first_not_processed() 
-
-                
 
                 except Exception as e:
                     print("ERROR: ", e)
@@ -292,5 +282,26 @@ class CheckContact(CheckContact):
             DB.save_db_to_csv_excel()
 
 
-check_contact = CheckContact(file_path='details2.xlsx')
-check_contact.run()
+# check_contact = CheckContact(file_path='details2.xlsx')
+# check_contact.run()
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run CheckContact with custom Excel and DB filenames.")
+    parser.add_argument("excel_file", type=str, help="Path to the Excel file (e.g., details.xlsx)")
+    parser.add_argument("--db_name", type=str, default=None, help="Custom SQLite database filename (default: same as Excel file)")
+
+    args = parser.parse_args()
+
+    check_contact = CheckContact(file_path=args.excel_file, db_name=args.db_name)
+    check_contact.run()
+
+
+"""
+    How to Run from Terminal:
+
+    python script.py details.xlsx --db_name my_database.db
+
+    or, if you want the database name to match the Excel file:
+
+    python script.py details.xlsx
+"""

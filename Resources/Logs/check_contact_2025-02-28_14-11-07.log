@@ -1,0 +1,22 @@
+2025-02-28 14:11:07,910 - INFO - Starting the contact details check...
+2025-02-28 14:11:09,796 - INFO - 
+
+
+Checking for Sari Elonheimo on https://www.pwc.fi/fi/palvelut/yritysjarjestelyt.html...
+2025-02-28 14:11:09,810 - INFO - ✅ Found 'Sari Elonheimo' on the first attempt.
+2025-02-28 14:11:10,840 - INFO - ✅ All words from title are present in the page content.
+2025-02-28 14:11:12,234 - INFO - 
+
+
+Checking for Teemu Anttila on https://www.ramboll.com/contact-us/people...
+2025-02-28 14:11:12,346 - INFO - ✅ Found 'Teemu Anttila' on the first attempt.
+2025-02-28 14:11:13,508 - INFO - ✅ All words from title are present in the page content.
+2025-02-28 14:11:15,610 - INFO - 
+
+
+Checking for Petri Pöllänen on https://peura-trans.com/yhteystiedot/...
+2025-02-28 14:11:15,615 - INFO - ✅ Found 'Petri Pöllänen' on the first attempt.
+2025-02-28 14:11:16,631 - INFO - ✅ All words from title are present in the page content.
+2025-02-28 14:11:16,803 - ERROR - Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed

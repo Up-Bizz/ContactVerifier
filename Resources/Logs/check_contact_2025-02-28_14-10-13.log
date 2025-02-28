@@ -1,0 +1,34 @@
+2025-02-28 14:10:13,141 - INFO - Starting the contact details check...
+2025-02-28 14:10:14,681 - INFO - 
+
+
+Checking for Melinda Jalasto on https://lomallo.fi/henkilosto/...
+2025-02-28 14:10:14,694 - INFO - ✅ Found 'Melinda Jalasto' on the first attempt.
+2025-02-28 14:10:15,741 - INFO - ✅ All words from title are present in the page content.
+2025-02-28 14:10:17,161 - INFO - 
+
+
+Checking for Tuohino  Anita on https://hok-elanto.fi/hallinto/...
+2025-02-28 14:10:17,165 - INFO - ✅ Found 'Tuohino  Anita' on the first attempt.
+2025-02-28 14:10:18,186 - INFO - ✅ Full title 'eläkeläinen' found on the page.
+2025-02-28 14:10:19,903 - INFO - 
+
+
+Checking for Jonne Kurokallio on https://www.recordlydata.com/contact...
+2025-02-28 14:10:19,914 - INFO - ✅ Found 'Jonne Kurokallio' on the first attempt.
+2025-02-28 14:10:20,943 - INFO - ✅ All words from title are present in the page content.
+2025-02-28 14:10:22,125 - INFO - 
+
+
+Checking for Nivakoski Urpo on https://www.avesco-cat.fi/contact...
+2025-02-28 14:10:22,145 - INFO - ✅ Found 'Nivakoski Urpo' on the first attempt.
+2025-02-28 14:10:23,174 - INFO - ✅ All words from title are present in the page content.
+2025-02-28 14:10:34,225 - INFO - 
+
+
+Checking for Juvonen Noora on https://kinno.fi/yhteystiedot/henkilosto/...
+2025-02-28 14:10:34,236 - INFO - ✅ Found 'Juvonen Noora' on the first attempt.
+2025-02-28 14:10:35,264 - INFO - ✅ All words from title are present in the page content.
+2025-02-28 14:10:36,338 - ERROR - Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed

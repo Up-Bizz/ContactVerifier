@@ -1,0 +1,15 @@
+2025-02-28 15:44:12,674 - INFO - Starting the contact details check...
+2025-02-28 15:44:14,168 - INFO - 
+
+
+Checking for Melinda Jalasto on https://lomallo.fi/henkilosto/...
+2025-02-28 15:44:14,180 - INFO - ✅ Found 'Melinda Jalasto' on the first attempt.
+2025-02-28 15:44:15,221 - INFO - ✅ All words from title are present in the page content.
+2025-02-28 15:44:17,143 - INFO - 
+
+
+Checking for Tuohino  Anita on https://hok-elanto.fi/hallinto/...
+2025-02-28 15:44:17,149 - INFO - ✅ Found 'Tuohino  Anita' on the first attempt.
+2025-02-28 15:44:17,296 - ERROR - Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed
